@@ -25,9 +25,13 @@ LABEL build_version="Build-date:- ${BUILD_DATE} SHA:- ${VCS_REF}"
 WORKDIR /app
 
 ENV PUID=1000 \
-    PGID=1000
+    PGID=1000 \
+    CONFIG_PATH=/config.yml
 
 RUN apt update && apt install -y gosu && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/ /app/
-CMD ["/bin/sh", "-c", "gosu \"${PUID}:${PGID}\" /app/.venv/bin/javsp -c /app/config.yaml"]
+
+RUN rm /app/config.yml
+
+CMD ["/bin/sh", "-c", "gosu \"${PUID}:${PGID}\" /app/.venv/bin/javsp -c \"${CONFIG_PATH}\""]
